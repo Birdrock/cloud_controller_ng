@@ -1,5 +1,9 @@
 ARG BUILD_IMAGE=ruby:2.5.5-buster
+ARG GIT_REV="Git commit unspecified"
 FROM $BUILD_IMAGE
+ARG BUILD_IMAGE
+ARG GIT_REV
+
 WORKDIR /cloud_controller_ng
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -45,3 +49,6 @@ RUN gem install bundler -v 1.17.3 && \
 COPY . .
 
 ENTRYPOINT ["/cloud_controller_ng/bin/cloud_controller", "-c", "/config/cloud_controller_ng.yml"]
+
+LABEL base_image=$BUILD_IMAGE
+LABEL git_sha=$GIT_REV
