@@ -1,4 +1,5 @@
-FROM ubuntu:bionic
+ARG BUILD_IMAGE=ruby:2.5.5-buster
+FROM $BUILD_IMAGE
 WORKDIR /cloud_controller_ng
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -33,15 +34,6 @@ RUN apt-get update && \
     unzip \
     libreadline-dev && \
   rm -rf /var/lib/apt/lists/*
-
-RUN wget https://cache.ruby-lang.org/pub/ruby/2.5/ruby-2.5.5.tar.gz -O /tmp/ruby.tar.gz && \
-    cd /tmp/ && \
-    tar zxvf /tmp/ruby.tar.gz && \
-    ls -alrt /tmp && \
-    cd /tmp/ruby-2.5.5 && \
-    ./configure && \
-    make -j $(nproc) && \
-    sudo make install
 
 COPY Gemfile .
 COPY Gemfile.lock .
