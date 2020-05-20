@@ -36,17 +36,26 @@ RUN apt-get update && \
     dnsutils \
     zip \
     unzip \
-    libreadline-dev && \
+    libreadline-dev \
+    ruby \
+    ruby-dev && \
   rm -rf /var/lib/apt/lists/*
+
+RUN gem install bundler -v 1.17.3
+
 
 COPY Gemfile .
 COPY Gemfile.lock .
 
-RUN gem install bundler -v 1.17.3 && \
-    bundle config build.nokogiri --use-system-libraries && \
-    bundle install --without test development
+RUN bundle config build.nokogiri --use-system-libraries && bundle install --without test development
 
 COPY . .
+
+RUN grep -q vcap /etc/group || groupadd -r vcap
+RUN grep -q vcap /etc/passwd || useradd -r -g vcap vcap
+RUN chown -R vcap:vcap .
+
+USER vcap:vcap
 
 ENTRYPOINT ["/cloud_controller_ng/bin/cloud_controller", "-c", "/config/cloud_controller_ng.yml"]
 
